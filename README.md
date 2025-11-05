@@ -1,4 +1,4 @@
-# North Metro Software Python Project Template
+# North Metro Software Python Project Template　（UPDATE this file with a brief project description)
 
 A Python project template for all new projects in North Metro Software
 
