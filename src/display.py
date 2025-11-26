@@ -6,3 +6,4 @@ class Display:
 
     def __str__(self):
         return f"Display {self.id}: {self.message}"
+
