@@ -24,9 +24,10 @@ class CarPark:
         self.update_displays()
 
     def remove_car(self, plate):
-        if plate in self.plates:
-            self.plates.remove(plate)
-            self.update_displays()
+        if plate not in self.plates:
+            raise ValueError()
+        self.plates.remove(plate)
+        self.update_displays()
 
     def update_displays(self):
         for display in self.displays:
