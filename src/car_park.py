@@ -1,13 +1,19 @@
+import json
 from sensor import Sensor
 from display import Display
+from pathlib import Path
+from datetime import datetime
+
 
 class CarPark:
-    def __init__(self, location, capacity, plates = None, displays = None, sensors = None):
+    def __init__(self, location, capacity, plates = None, displays = None, sensors = None, log_file = Path("log.txt")):
         self.location = location
         self.capacity = capacity
         self.plates = plates or []
         self.displays = displays or []
         self.sensors = sensors or []
+        self.log_file = log_file if isinstance(log_file, Path) else Path(log_file)
+        self.log_file.touch(exist_ok=True)
 
     def __str__(self):
         return f"Car park at {self.location} with capacity {self.capacity} bays."
@@ -22,14 +28,20 @@ class CarPark:
             self.displays.append(component)
 
     def add_car(self, plate):
+        if self.available_bays == 0:
+            raise ValueError("Car park is full")
+        if plate in self.plates:
+            raise ValueError("Car already in car park")
         self.plates.append(plate)
         self.update_displays()
+        self._log_car_activity(plate, "entered")
 
     def remove_car(self, plate):
         if plate not in self.plates:
             raise ValueError()
         self.plates.remove(plate)
         self.update_displays()
+        self._log_car_activity(plate, "exited")
 
     def update_displays(self):
         for display in self.displays:
@@ -40,6 +52,23 @@ class CarPark:
         for display in self.displays:
             display.update(data)
 
+    def _log_car_activity(self, plate, action):
+        with self.log_file.open("a") as f:
+            f.write(f"{plate}, {action} at {datetime.now()}\n")
+
+    def write_config(self, config_file="config.json"):
+        with open(config_file, "w") as f:
+            json.dump({"location": self.location,
+                       "capacity": self.capacity,
+                       "log_file": str(self.log_file)}, f)
+
     @property
     def available_bays(self):
         return max(0, self.capacity - len(self.plates))
+
+    @classmethod
+    def from_config(cls, config_file="config.json"):
+        config_file = config_file if isinstance(config_file, Path) else Path(config_file)
+        with config_file.open() as f:
+            data = json.load(f)
+        return cls(data["location"], data["capacity"], log_file=data["log_file"])
