@@ -1,3 +1,4 @@
+import json
 from sensor import Sensor
 from display import Display
 from pathlib import Path
@@ -55,6 +56,19 @@ class CarPark:
         with self.log_file.open("a") as f:
             f.write(f"{plate}, {action} at {datetime.now()}\n")
 
+    def write_config(self, config_file="config.json"):
+        with open(config_file, "w") as f:
+            json.dump({"location": self.location,
+                       "capacity": self.capacity,
+                       "log_file": str(self.log_file)}, f)
+
     @property
     def available_bays(self):
         return max(0, self.capacity - len(self.plates))
+
+    @classmethod
+    def from_config(cls, config_file="config.json"):
+        config_file = config_file if isinstance(config_file, Path) else Path(config_file)
+        with config_file.open() as f:
+            data = json.load(f)
+        return cls(data["location"], data["capacity"], log_file=data["log_file"])
