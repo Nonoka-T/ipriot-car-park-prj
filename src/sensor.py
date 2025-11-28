@@ -12,7 +12,7 @@ class Sensor(ABC):
         return f"Sensor {self.id}: {status}"
 
     @abstractmethod
-    def update_car_park(self):
+    def update_car_park(self, plate):
         pass
 
     def _scan_plate(self):
@@ -28,7 +28,7 @@ class EntrySensor(Sensor):
         print(f"Incoming vehicle detected. Plate: {plate}")
 
 class ExitSensor(Sensor):
-    def update_car_park(self):
+    def update_car_park(self, plate):
         self.car_park.remove_car(plate)
         print(f"Outgoing vehicle detected: Plate: {plate}")
 
