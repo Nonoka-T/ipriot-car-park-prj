@@ -46,6 +46,7 @@ class CarPark:
         self._log_car_activity(plate, "exited")
 
     def update_displays(self):
+        #update display to show the current status
         for display in self.displays:
             display.update()
 
