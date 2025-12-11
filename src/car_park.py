@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 class CarPark:
+    """Manage sensors, displays, bays, log of car park"""
     def __init__(self, location, capacity, plates = None, displays = None, sensors = None, log_file = Path("log.txt")):
         self.location = location
         self.capacity = capacity
@@ -28,6 +29,7 @@ class CarPark:
             self.displays.append(component)
 
     def add_car(self, plate):
+        #Check the same car to avoid recorded twice
         if self.available_bays == 0:
             raise ValueError("Car park is full")
         if plate in self.plates:
@@ -44,6 +46,7 @@ class CarPark:
         self._log_car_activity(plate, "exited")
 
     def update_displays(self):
+        #update display to show the current status
         for display in self.displays:
             display.update()
 
